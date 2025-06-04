@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Item List</title>
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+</head>
+<body>
+  <h1>Add Item</h1>
+  <form action="/add" method="POST">
+    <input type="text" name="item" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <h2>Search Item</h2>
+  <form method="GET" action="/">
+    <input type="text" name="search" placeholder="Search..." value="<%= searchQuery || '' %>">
+    <button type="submit">Search</button>
+  </form>
+
+  <h2>Item List</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Item</th>
+        <th>Date Added</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% items.forEach((item, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td style="<%= item.completed ? 'text-decoration: line-through;' : '' %>">
+            <% if (editIndex === index) { %>
+              <form action="/update" method="POST" style="display:inline;">
+                <input type="hidden" name="index" value="<%= index %>" />
+                <input type="text" name="updatedItem" value="<%= item.text %>" required />
+                <button type="submit">Save</button>
+              </form>
+            <% } else { %>
+              <%= item.text %>
+            <% } %>
+          </td>
+          <td><%= item.date %></td>
+          <td data-label="Action">
+            <!-- Toggle Complete -->
+            <form action="/toggle" method="POST" style="display:inline;">
+              <input type="hidden" name="index" value="<%= index %>" />
+              <button type="submit" title="<%= item.completed ? 'Undo' : 'Done' %>">
+                <%= item.completed ? '↩️ Undo' : '✅ Done' %>
+              </button>
+            </form>
+
+            <!-- Edit -->
+            <% if (editIndex !== index) { %>
+              <form action="/edit" method="POST" style="display:inline;">
+                <input type="hidden" name="index" value="<%= index %>" />
+                <button type="submit" title="Edit">✏️ Edit</button>
+              </form>
+            <% } %>
+
+            <!-- Delete -->
+            <form action="/delete" method="POST" style="display:inline;">
+              <input type="hidden" name="index" value="<%= index %>" />
+              <button type="submit" title="Delete">🗑️ Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>
